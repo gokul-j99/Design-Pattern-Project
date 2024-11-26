@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Run Main Method",
+      "setup": "",
+      "run": "mvn compile exec:java -Dexec.mainClass=\"edu.neu.csye6200.Driver\"",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": null
+    }
+  ]
+}
