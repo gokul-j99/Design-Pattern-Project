@@ -19,7 +19,7 @@ public class PortfolioController {
         if (role == null || !role.equals("user")) {
             return "Permission denied. Only users can create portfolios.";
         }
-        Portfolio portfolio = new Portfolio(portfolioName);
+        Portfolio portfolio = new Portfolio.PortfolioBuilder().setName(username).setOwner(username).build();
         InMemoryDatabase.savePortfolio(username, portfolio);
         return "Portfolio '" + portfolioName + "' created for user: " + username;
     }

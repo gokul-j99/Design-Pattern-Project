@@ -5,10 +5,19 @@ import java.util.List;
 
 public class Portfolio {
     private String name;
+
+    private String owner;
     private List<Stock> stocks = new ArrayList<>();
 
-    public Portfolio(String name) {
-        this.name = name;
+
+    public String getOwner() {
+        return owner;
+    }
+
+    private Portfolio(PortfolioBuilder builder) {
+        this.name = builder.name;
+        this.owner = builder.owner;
+        this.stocks = builder.stocks;
     }
 
     public void addStock(Stock stock) {
@@ -44,5 +53,30 @@ public class Portfolio {
             }
         }
         return  stock;
+    }
+
+    public static class PortfolioBuilder {
+        private String name;
+        private String owner;
+        private List<Stock> stocks = new ArrayList<>();
+
+        public PortfolioBuilder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public PortfolioBuilder setOwner(String owner) {
+            this.owner = owner;
+            return this;
+        }
+
+        public PortfolioBuilder addStock(Stock stock) {
+            this.stocks.add(stock);
+            return this;
+        }
+
+        public Portfolio build() {
+            return new Portfolio(this);
+        }
     }
 }

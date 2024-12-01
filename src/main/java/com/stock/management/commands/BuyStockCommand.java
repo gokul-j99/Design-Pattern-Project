@@ -11,7 +11,7 @@ public class BuyStockCommand implements Command {
 
     public BuyStockCommand(Portfolio portfolio, Stock stock, int quantity) {
         this.portfolio = portfolio;
-        this.stock = stock;
+        this.stock = stock.clone();
         this.quantity = quantity;
     }
 

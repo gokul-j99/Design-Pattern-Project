@@ -11,7 +11,7 @@ public class InMemoryDatabase {
     private static Map<String, Set<Portfolio>> portfolioDB = new HashMap<>();
     private static Map<String, Stock> stockDB = new HashMap<>();
 
-    private static Stack<Command> transactionHistory = new Stack<>();
+    private static  Map<String,Stack<Command>> transactionHistory = new HashMap<>();
 
     private static Map<String, List<Double>> stockPrices = new HashMap<>();
     private static Map<String, List<Observer>> observersDB = new HashMap<>();
@@ -62,14 +62,18 @@ public class InMemoryDatabase {
         return stockQuantity.getOrDefault(stockName, 0);
     }
 
-    public static void updateStockQuantity(String stockName, int change) {
+    public static boolean updateStockQuantity(String stockName, int change) {
         if (stockQuantity.containsKey(stockName)) {
             int currentQuantity = stockQuantity.getOrDefault(stockName, 0);
             stockQuantity.put(stockName, currentQuantity + change);
+            return true;
+        }
+        else{
+            return  false;
         }
     }
 
-    public static void updateStockPrice(String name, double newPrice) {
+    public static boolean updateStockPrice(String name, double newPrice) {
         if (stockPrices.containsKey(name)) {
             List<Double> prices = stockPrices.get(name);
             prices.add(newPrice);
@@ -78,6 +82,10 @@ public class InMemoryDatabase {
             if (stock != null) {
                 stock.setPrice(newPrice);
             }
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
@@ -99,18 +107,38 @@ public class InMemoryDatabase {
         }
     }
 
+    public static void notifyStockUpdate(String stockName, String message) {
+        if (observersDB.containsKey(stockName)) {
+            for (Observer observer : observersDB.get(stockName)) {
+                observer.update(stockName, message);
+            }
+        }
+    }
+
 
     // Transaction Management
-    public static void addTransaction(Command command) {
-        transactionHistory.push(command);
+    public static void addTransaction(String username,Command command) {
+        Stack<Command> stack;
+        if(transactionHistory.containsKey(username)){
+            stack = transactionHistory.get(username);
+            stack.push(command);
+        }
+        else {
+            stack = new Stack<>();
+            stack.push(command);
+        }
+        transactionHistory.put(username,stack);
+
+
     }
 
-    public static Command getLastTransaction() {
-        return transactionHistory.isEmpty() ? null : transactionHistory.pop();
+    public static Command getLastTransaction(String username) {
+        Stack<Command> commands = transactionHistory.getOrDefault(username, new Stack<>());
+        return commands.isEmpty() ? null : commands.pop();
     }
 
-    public static Stack<Command> getTransactionHistory() {
-        return transactionHistory;
+    public static Stack<Command> getTransactionHistory(String username) {
+      return transactionHistory.getOrDefault(username, new Stack<>());
     }
 
     public static Map<String, List<Observer>> getAllSubscriptions() {

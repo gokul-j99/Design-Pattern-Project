@@ -1,6 +1,6 @@
 package com.stock.management.models;
 
-public abstract class Stock {
+public abstract class Stock implements Cloneable{
     protected String name;
     protected double price;
     protected int quantity; // To calculate ROI
@@ -36,5 +36,14 @@ public abstract class Stock {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public Stock clone() {
+        try {
+            return (Stock) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone not supported for Stock", e);
+        }
     }
 }
