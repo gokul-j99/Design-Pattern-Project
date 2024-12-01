@@ -1,4 +1,4 @@
-# Welcome to the course CSYE 7200 - Design Patterns
+# Welcome to the course CSYE 7374 - Design Patterns
 > Northeastern University, College of Engineering
 
 
