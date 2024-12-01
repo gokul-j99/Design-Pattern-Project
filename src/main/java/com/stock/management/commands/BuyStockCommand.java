@@ -1,5 +1,6 @@
 package com.stock.management.commands;
 
+import com.stock.management.bridge.Currency;
 import com.stock.management.models.Portfolio;
 import com.stock.management.models.Stock;
 import com.stock.management.storage.InMemoryDatabase;
@@ -9,10 +10,13 @@ public class BuyStockCommand implements Command {
     private Stock stock;
     private int quantity;
 
-    public BuyStockCommand(Portfolio portfolio, Stock stock, int quantity) {
+    private Currency currency;
+
+    public BuyStockCommand(Portfolio portfolio, Stock stock, int quantity,Currency currency) {
         this.portfolio = portfolio;
         this.stock = stock.clone();
         this.quantity = quantity;
+        this.currency = currency;
     }
 
     @Override

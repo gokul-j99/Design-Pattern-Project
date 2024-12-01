@@ -2,6 +2,7 @@ package com.stock.management.controllers;
 
 import com.stock.management.commands.TransactionManager;
 import com.stock.management.facade.StockMarketFacade;
+import com.stock.management.models.CurrencyType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -13,14 +14,15 @@ public class TransactionController {
 
     private StockMarketFacade stockMarketFacade = new StockMarketFacade();;
 
+
     @PostMapping("/buy")
     public String buyStock(
             @RequestParam String username,
             @RequestParam String stockName,
             @RequestParam String portfolioName,
-            @RequestParam int quantity) {
-
-        return stockMarketFacade.buyStock(username, stockName, portfolioName, quantity);
+            @RequestParam int quantity,
+            @RequestParam String currencyType) {
+        return stockMarketFacade.buyStock(username, stockName, portfolioName, quantity, currencyType);
     }
 
     @PostMapping("/undo")
@@ -35,10 +37,9 @@ public class TransactionController {
             @RequestParam String username,
             @RequestParam String stockName,
             @RequestParam String portfolioName,
-            @RequestParam int quantity) {
-        // Validate portfolio
-        return stockMarketFacade.sellStock(username, stockName, portfolioName, quantity);
-
+            @RequestParam int quantity,
+            @RequestParam String currencyType) {
+        return stockMarketFacade.sellStock(username, stockName, portfolioName, quantity, currencyType);
     }
 
     @GetMapping("/details")

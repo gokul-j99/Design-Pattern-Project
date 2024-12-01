@@ -4,6 +4,7 @@ public abstract class Stock implements Cloneable{
     protected String name;
     protected double price;
     protected int quantity; // To calculate ROI
+    private CurrencyType purchaseCurrency;
 
     public Stock(String name, double price, int quantity) {
         this.name = name;
@@ -36,6 +37,18 @@ public abstract class Stock implements Cloneable{
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public CurrencyType getPurchaseCurrency() {
+        return purchaseCurrency;
+    }
+
+    public void setPurchaseCurrency(CurrencyType purchaseCurrency) {
+        this.purchaseCurrency = purchaseCurrency;
     }
 
     @Override
