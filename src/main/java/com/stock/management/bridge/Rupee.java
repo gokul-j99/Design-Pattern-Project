@@ -1,7 +1,7 @@
 package com.stock.management.bridge;
 
 public class Rupee implements Currency {
-    private static final double INR_TO_USD_RATE = 0.012;
+    private static final double INR_TO_USD_RATE = 82.4;
 
     @Override
     public double convertToBaseCurrency(double amount) {
@@ -10,6 +10,11 @@ public class Rupee implements Currency {
 
     @Override
     public String getCurrencySymbol() {
-        return "₹";
+        return "INR";
+    }
+
+    @Override
+    public String toString() {
+        return "Rupeex";
     }
 }

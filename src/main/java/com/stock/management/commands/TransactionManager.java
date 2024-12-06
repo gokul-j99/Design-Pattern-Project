@@ -2,6 +2,8 @@ package com.stock.management.commands;
 
 import com.stock.management.storage.InMemoryDatabase;
 
+import java.util.List;
+
 public class TransactionManager {
 
     public void executeCommand(String userName,Command command) {
@@ -18,9 +20,10 @@ public class TransactionManager {
         }
     }
 
-    public void viewTransactionHistory(String userName) {
+    public List<Command> viewTransactionHistory(String userName) {
         for (Command command : InMemoryDatabase.getTransactionHistory(userName)) {
             System.out.println(command.toString());
         }
+        return InMemoryDatabase.getTransactionHistory(userName).stream().toList();
     }
 }

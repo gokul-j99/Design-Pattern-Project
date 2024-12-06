@@ -18,10 +18,16 @@ public class Session {
         this.role  =role;
     }
 
-    public  void  logout(String user){
+    public  boolean  logout(String user){
+
+        if(! InMemoryDatabase.isValidUser(user)){
+            return  false;
+        }
+
         InMemoryDatabase.removeSession(user);
         this.loggedInUser= "";
         this.role = "";
+        return true;
     }
 
 }

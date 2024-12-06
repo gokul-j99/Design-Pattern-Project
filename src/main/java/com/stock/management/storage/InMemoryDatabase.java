@@ -52,10 +52,16 @@ public class InMemoryDatabase {
             prices.add(stock.getPrice());
             stockPrices.put(stock.getName(), prices);
             stockQuantity.put(stock.getName(), stock.getQuantity());
+            System.out.println("Added stock succesfully");
+
         } else {
+
             updateStockPrice(stock.getName(), stock.getPrice());
-            updateStockQuantity(stock.getName(),stock.getQuantity());
+            updateStockQuantity(stock.getName(), stock.getQuantity());
         }
+
+        System.out.println("InMemoryDatabase");
+        System.out.println(stockDB.get(stock.getName()));
     }
 
     public static int getAvailableQuantity(String stockName) {
@@ -66,11 +72,18 @@ public class InMemoryDatabase {
         if (stockQuantity.containsKey(stockName)) {
             int currentQuantity = stockQuantity.getOrDefault(stockName, 0);
             stockQuantity.put(stockName, currentQuantity + change);
+            Stock stock = getStock(stockName);
+            stock.setQuantity(currentQuantity + change);
+            stockDB.put(stockName,stock);
             return true;
         }
         else{
             return  false;
         }
+    }
+
+    public static boolean isValidUser(String username){
+        return sessionDB.containsKey(username);
     }
 
     public static boolean updateStockPrice(String name, double newPrice) {
@@ -154,7 +167,7 @@ public class InMemoryDatabase {
     }
 
     public static String getUserRole(String username) {
-        return sessionDB.get(username);
+        return sessionDB.getOrDefault(username, null);
     }
 
     public static Map<String, String> getAllSessions() {

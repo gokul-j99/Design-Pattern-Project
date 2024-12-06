@@ -4,6 +4,8 @@ import com.stock.management.observer.Observer;
 import com.stock.management.observer.StockNotifier;
 import com.stock.management.observer.UserObserver;
 import com.stock.management.storage.InMemoryDatabase;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -16,56 +18,84 @@ import java.util.Map;
 public class StockNotifierController {
 
     @PostMapping("/subscribe")
-    public String subscribe(@RequestParam String username, @RequestParam String stockName) {
-        UserObserver userObserver = new UserObserver(username);
-        StockNotifier.getInstance().addObserver(userObserver);
-        InMemoryDatabase.subscribeObserver(stockName, userObserver);
-        return username + " subscribed to notifications for stock: " + stockName;
+    public ResponseEntity<String> subscribe(@RequestParam String username, @RequestParam String stockName) {
+        try {
+            UserObserver userObserver = new UserObserver(username);
+            StockNotifier.getInstance().addObserver(userObserver);
+            InMemoryDatabase.subscribeObserver(stockName, userObserver);
+            return ResponseEntity.ok(username + " subscribed to notifications for stock: " + stockName);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to subscribe user " + username + " for stock: " + stockName + ". Error: " + e.getMessage());
+        }
     }
 
     @PostMapping("/unsubscribe")
-    public String unsubscribe(@RequestParam String username, @RequestParam String stockName) {
-        UserObserver userObserver = new UserObserver(username);
-        InMemoryDatabase.unsubscribeObserver(stockName, userObserver);
-        return username + " unsubscribed from notifications for stock: " + stockName;
+    public ResponseEntity<String> unsubscribe(@RequestParam String username, @RequestParam String stockName) {
+        try {
+            UserObserver userObserver = new UserObserver(username);
+            InMemoryDatabase.unsubscribeObserver(stockName, userObserver);
+            return ResponseEntity.ok(username + " unsubscribed from notifications for stock: " + stockName);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to unsubscribe user " + username + " for stock: " + stockName + ". Error: " + e.getMessage());
+        }
     }
 
     @PostMapping("/update-price")
-    public String updateStockPrice(@RequestParam String stockName, @RequestParam double newPrice) {
-        String message = "Stock price updated to $" + newPrice;
-        StockNotifier.getInstance().notifyObservers(stockName, message);
-        InMemoryDatabase.notifyStockUpdate(stockName, message);
-        return "Stock price updated for " + stockName + " to $" + newPrice;
+    public ResponseEntity<String> updateStockPrice(@RequestParam String stockName, @RequestParam double newPrice) {
+        try {
+            String message = "Stock price updated to $" + newPrice;
+            StockNotifier.getInstance().notifyObservers(stockName, message);
+            InMemoryDatabase.notifyStockUpdate(stockName, message);
+            return ResponseEntity.ok("Stock price updated for " + stockName + " to $" + newPrice);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to update stock price for " + stockName + ". Error: " + e.getMessage());
+        }
     }
 
     @GetMapping("/subscriptions")
-    public Map<String, List<String>> viewSubscriptions() {
-        Map<String, List<String>> subscriptions = new HashMap<>();
-        InMemoryDatabase.getAllSubscriptions().forEach((stock, observers) -> {
-            List<String> usernames = new ArrayList<>();
-            for (Observer observer : observers) {
-                if (observer instanceof UserObserver) {
-                    usernames.add(((UserObserver) observer).getUsername());
+    public ResponseEntity<Map<String, List<String>>> viewSubscriptions() {
+        try {
+            Map<String, List<String>> subscriptions = new HashMap<>();
+            InMemoryDatabase.getAllSubscriptions().forEach((stock, observers) -> {
+                List<String> usernames = new ArrayList<>();
+                for (Observer observer : observers) {
+                    if (observer instanceof UserObserver) {
+                        usernames.add(((UserObserver) observer).getUsername());
+                    }
                 }
-            }
-            subscriptions.put(stock, usernames);
-        });
-        return subscriptions;
+                subscriptions.put(stock, usernames);
+            });
+            return ResponseEntity.ok(subscriptions);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null); // Return null body with 500 status
+        }
     }
 
     @GetMapping("/user-notifications")
-    public List<String> getUserNotifications(@RequestParam String username, @RequestParam(required = false) String stockName) {
-        for (List<Observer> observers : InMemoryDatabase.getAllSubscriptions().values()) {
-            for (Observer observer : observers) {
-                if (observer instanceof UserObserver && ((UserObserver) observer).getUsername().equals(username)) {
-                    if (stockName == null) {
-                        return ((UserObserver) observer).getNotificationLog();
-                    } else {
-                        return ((UserObserver) observer).filterNotifications(stockName);
+    public ResponseEntity<Object> getUserNotifications(
+            @RequestParam String username,
+            @RequestParam(required = false) String stockName) {
+        try {
+            for (List<Observer> observers : InMemoryDatabase.getAllSubscriptions().values()) {
+                for (Observer observer : observers) {
+                    if (observer instanceof UserObserver && ((UserObserver) observer).getUsername().equals(username)) {
+                        if (stockName == null) {
+                            return ResponseEntity.ok(((UserObserver) observer).getNotificationLog());
+                        } else {
+                            return ResponseEntity.ok(((UserObserver) observer).filterNotifications(stockName));
+                        }
                     }
                 }
             }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No notifications found for user: " + username);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to retrieve notifications for user " + username + ". Error: " + e.getMessage());
         }
-        return List.of("No notifications found for user: " + username);
     }
 }

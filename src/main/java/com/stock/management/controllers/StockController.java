@@ -4,6 +4,8 @@ import com.stock.management.factory.StockFactory;
 import com.stock.management.models.Stock;
 import com.stock.management.observer.StockNotifier;
 import com.stock.management.storage.InMemoryDatabase;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -14,59 +16,73 @@ public class StockController {
 
     @PostMapping("/add")
     public String addStock(
-            @RequestParam String adminName,
+            @RequestParam String username,
             @RequestParam String stockName,
             @RequestParam double price,
             @RequestParam int quantity,
             @RequestParam String type) {
-        String role = InMemoryDatabase.getUserRole(adminName);
+        String role = InMemoryDatabase.getUserRole(username);
         if (role == null || !role.equals("admin")) {
             return "Permission denied. Only admins can add stocks.";
         }
         Stock stock = StockFactory.getInstance().createStock(type,stockName,price,quantity);
 
-        InMemoryDatabase.saveStock(stock);
-        return "Stock '" + stockName + "' added to the database.";
+        return "Stock '" + stock.getName() + "' added to the database.";
     }
 
 
     @PostMapping("/update")
-    public String updateStockPrice( @RequestParam String adminName,@RequestParam String stockName,
+    public ResponseEntity<String> updateStockPrice( @RequestParam String username,@RequestParam String stockName,
                                     @RequestParam(required = false) Double newPrice,
                                     @RequestParam(required = false) Integer quantity) {
-        String message = "Stock price updated to $" + newPrice;
 
-        String role = InMemoryDatabase.getUserRole(adminName);
+        String role = InMemoryDatabase.getUserRole(username);
         if (role == null || !role.equals("admin")) {
-            return "Permission denied. Only admins can add stocks.";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Permission denied. Only admins can update stocks.");
         }
-        if(newPrice != null){
-            boolean result  = InMemoryDatabase.updateStockPrice(stockName,newPrice);
+        if (newPrice == null && quantity == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Please provide either a new price or quantity to update.");
+        }
 
-            if(!result){
-                return "The Given Stock" +  stockName +" is not in DB. Please add the stock.";
+        StringBuilder message = new StringBuilder();
+
+        if (newPrice != null) {
+            boolean priceUpdated = InMemoryDatabase.updateStockPrice(stockName, newPrice);
+            if (!priceUpdated) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("The stock '" + stockName + "' is not in the database. Please add the stock.");
             }
+            message.append("Stock price updated to $").append(newPrice).append(". ");
         }
-        if(quantity != null){
 
-            boolean result  = InMemoryDatabase.updateStockQuantity(stockName,quantity);
-
-            if(!result){
-                return "The Given Stock" +  stockName +" is not in DB. Please add the stock.";
+        if(quantity != null) {
+            boolean quantityUpdated = InMemoryDatabase.updateStockQuantity(stockName, quantity);
+            if (!quantityUpdated) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("The stock '" + stockName + "' is not in the database. Please add the stock.");
             }
+            message.append("Stock quantity updated to ").append(quantity).append(". ");
         }
 
-        InMemoryDatabase.notifyStockUpdate(stockName, message);
-        StockNotifier.getInstance().notifyObservers(stockName, message);
-        return "Stock price updated for " + stockName + " to $" + newPrice;
+        // Notify observers
+        InMemoryDatabase.notifyStockUpdate(stockName, message.toString());
+        StockNotifier.getInstance().notifyObservers(stockName, message.toString());
+
+        return ResponseEntity.ok("Update successful for stock '" + stockName + "': " + message.toString());
     }
 
     @GetMapping("/list")
-    public Map<String, Stock> listStocks(@RequestParam String username) {
+    public ResponseEntity<Object> listStocks(@RequestParam String username) {
         String role = InMemoryDatabase.getUserRole(username);
+
         if (role == null || !(role.equals("user") || role.equals("admin"))) {
-            throw new IllegalArgumentException("Permission denied. Only logged-in users and admins can view stocks.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Permission denied. Only logged-in users and admins can view stocks.");
         }
-        return InMemoryDatabase.getStockDB();
+
+        Map<String, Stock> stocks = InMemoryDatabase.getStockDB();
+        return ResponseEntity.ok(stocks);
     }
 }

@@ -10,6 +10,11 @@ public class Euro implements Currency {
 
     @Override
     public String getCurrencySymbol() {
-        return "€";
+        return "EUR";
+    }
+
+    @Override
+    public String toString() {
+        return "Euro";
     }
 }

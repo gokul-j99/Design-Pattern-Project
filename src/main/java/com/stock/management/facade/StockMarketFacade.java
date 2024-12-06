@@ -22,6 +22,10 @@ public class StockMarketFacade {
         // Validate currency type
         CurrencyType currencyEnum = CurrencyType.fromString(currencyType);
 
+        if(!InMemoryDatabase.isValidUser(username)){
+            return "No User named '" + username + "' found ";
+        }
+
         // Fetch the user's portfolio
         Portfolio portfolio = StockHelper.getValidPortfolio(username, portfolioName);
         if (portfolio == null) {
@@ -34,12 +38,6 @@ public class StockMarketFacade {
             return "Stock '" + stockName + "' not found in database.";
         }
 
-        // Check stock availability
-        int availableQuantity = InMemoryDatabase.getAvailableQuantity(stockName);
-        if (quantity > availableQuantity) {
-            return "Transaction failed: Not enough stock available. Requested: " + quantity +
-                    ", Available: " + availableQuantity;
-        }
 
         // Create Currency object using factory
         Currency currency = CurrencyFactory.getCurrency(currencyEnum);

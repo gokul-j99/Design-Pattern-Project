@@ -1,8 +1,10 @@
 package com.stock.management.controllers;
 
 import com.stock.management.decorator.DetailedStockReport;
-import com.stock.management.factory.StockFactory;
 import com.stock.management.models.Stock;
+import com.stock.management.storage.InMemoryDatabase;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -10,9 +12,27 @@ import org.springframework.web.bind.annotation.*;
 public class StockReportController {
 
     @PostMapping("/detailed")
-    public String getDetailedReport(@RequestParam String type, @RequestParam String name, @RequestParam double price) {
-        Stock stock = StockFactory.getInstance().createStock(type, name, price,1);
-        Stock decoratedStock = new DetailedStockReport(stock);
-        return decoratedStock.display();
+    public ResponseEntity<Object> getDetailedReport(@RequestParam String stockName) {
+        try {
+            // Fetch stock from the database
+            Stock stock = InMemoryDatabase.getStock(stockName);
+            if (stock == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Stock not found: " + stockName);
+            }
+
+            // Decorate the stock with detailed report functionality
+            Stock decoratedStock = new DetailedStockReport(stock);
+            String report = decoratedStock.display();
+
+            // Return the detailed report
+            return ResponseEntity.ok(report);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred: " + e.getMessage());
+        }
     }
 }

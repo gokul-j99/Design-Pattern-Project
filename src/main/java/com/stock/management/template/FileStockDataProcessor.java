@@ -5,17 +5,16 @@ import com.stock.management.models.Stock;
 import java.util.ArrayList;
 import java.util.List;
 
-public class APIBasedStockData extends StockDataTemplate {
-
+public class FileStockDataProcessor extends StockDataTemplate {
     @Override
     protected void connectToSource() {
-        System.out.println("Connecting to stock API...");
+        System.out.println("Opening stock data file...");
     }
 
     @Override
     protected List<Stock> fetchStockDetails() {
-        System.out.println("Fetching stock details from API...");
-        // Simulated stock data
+        System.out.println("Reading stock details from file...");
+
         List<Stock> stocks = new ArrayList<>();
         stocks.add(new Stock("Apple", 150.0, 25) {
             @Override
@@ -31,4 +30,5 @@ public class APIBasedStockData extends StockDataTemplate {
         });
         return stocks;
     }
+
 }

@@ -1,21 +1,28 @@
 package com.stock.management.models;
 
+import com.stock.management.bridge.Currency;
+
+
 public abstract class Stock implements Cloneable{
     protected String name;
     protected double price;
     protected int quantity; // To calculate ROI
+
     private CurrencyType purchaseCurrency;
 
     public Stock(String name, double price, int quantity) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
+
     }
     public Stock(String name, double price) {
         this.name = name;
         this.price = price;
         this.quantity = 1;
     }
+
+    
 
     public String getName() {
         return name;
@@ -36,7 +43,10 @@ public abstract class Stock implements Cloneable{
     public abstract String display();
 
     public void setQuantity(int quantity) {
+
         this.quantity = quantity;
+
+
     }
 
     public void setName(String name) {
@@ -49,6 +59,15 @@ public abstract class Stock implements Cloneable{
 
     public void setPurchaseCurrency(CurrencyType purchaseCurrency) {
         this.purchaseCurrency = purchaseCurrency;
+    }
+
+    @Override
+    public String toString() {
+        return "Stock{" +
+                "name='" + name + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                '}';
     }
 
     @Override

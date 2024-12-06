@@ -8,6 +8,11 @@ public class Dollar implements Currency {
 
     @Override
     public String getCurrencySymbol() {
-        return "$";
+        return "USD";
+    }
+
+    @Override
+    public String toString() {
+        return "Dollar";
     }
 }

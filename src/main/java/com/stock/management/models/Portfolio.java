@@ -79,4 +79,13 @@ public class Portfolio {
             return new Portfolio(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return "Portfolio{" +
+                "name='" + name + '\'' +
+                ", owner='" + owner + '\'' +
+                ", stocks=" + stocks +
+                '}';
+    }
 }
