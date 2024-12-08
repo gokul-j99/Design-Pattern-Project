@@ -3,6 +3,8 @@ package com.stock.management.commands;
 import com.stock.management.bridge.Currency;
 import com.stock.management.models.Portfolio;
 import com.stock.management.models.Stock;
+import com.stock.management.models.Transaction;
+import com.stock.management.models.UserStock;
 import com.stock.management.storage.InMemoryDatabase;
 
 public class SellStockCommand implements Command {
@@ -50,6 +52,8 @@ public class SellStockCommand implements Command {
         // Save updated portfolio and update available stock in the database
         InMemoryDatabase.savePortfolio(portfolio.getName(), portfolio);
         InMemoryDatabase.updateStockQuantity(stock.getName(), quantity);
+        UserStock userStock = new UserStock(portfolio.getOwner(), stock.getName());
+        InMemoryDatabase.recordTransaction(userStock, new Transaction("sell", stock.getPrice(), quantity));
     }
 
     @Override
@@ -77,6 +81,7 @@ public class SellStockCommand implements Command {
 
         System.out.println("Undo: Restored " + quantity + " of stock '" + stock.getName() + "' to portfolio '" +
                 portfolio.getName() + "'.");
+
     }
 
     @Override

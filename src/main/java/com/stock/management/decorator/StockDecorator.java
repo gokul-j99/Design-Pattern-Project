@@ -1,13 +1,14 @@
 package com.stock.management.decorator;
 
 import com.stock.management.models.Stock;
+import com.stock.management.models.UserStock;
+import com.stock.management.storage.InMemoryDatabase;
 
 public abstract class StockDecorator extends Stock {
-    protected Stock stock;
+    protected UserStock stock;
 
-    public StockDecorator(Stock stock) {
-        super(stock.getName(), stock.getPrice());
-        this.stock = stock;
+    public StockDecorator(UserStock userStock) {
+        super();
     }
 
     public abstract String display();

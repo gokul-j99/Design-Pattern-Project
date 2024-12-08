@@ -1,6 +1,8 @@
 package com.stock.management.template;
 
+import com.stock.management.models.FinanceStock;
 import com.stock.management.models.Stock;
+import com.stock.management.models.TechStock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,18 +19,8 @@ public class APIBasedStockData extends StockDataTemplate {
         System.out.println("Fetching stock details from API...");
         // Simulated stock data
         List<Stock> stocks = new ArrayList<>();
-        stocks.add(new Stock("Apple", 150.0, 25) {
-            @Override
-            public String display() {
-                return "Stock: " + getName() + ", Price: " + getPrice();
-            }
-        });
-        stocks.add(new Stock("Google", 2800.0, 0) {
-            @Override
-            public String display() {
-                return "Stock: " + getName() + ", Price: " + getPrice();
-            }
-        });
+        stocks.add(new TechStock("Amazon",121.1,202));
+        stocks.add(new FinanceStock("Statestreet",121.1,403));
         return stocks;
     }
 }

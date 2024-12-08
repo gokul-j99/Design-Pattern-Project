@@ -2,9 +2,7 @@ package com.stock.management.commands;
 
 
 import com.stock.management.bridge.Currency;
-import com.stock.management.models.CurrencyType;
-import com.stock.management.models.Portfolio;
-import com.stock.management.models.Stock;
+import com.stock.management.models.*;
 import com.stock.management.storage.InMemoryDatabase;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -77,6 +75,8 @@ public class BuyStockCommand implements Command {
         InMemoryDatabase.savePortfolio(portfolio.getName(), portfolio); // Update portfolio
         InMemoryDatabase.updateStockQuantity(stock.getName(), -quantity); // Decrement stock quantity
         System.out.println("Executed: Bought " + quantity + " of " + stock.getName());
+        UserStock userStock = new UserStock(portfolio.getOwner(), stock.getName());
+        InMemoryDatabase.recordTransaction(userStock, new Transaction("buy", stock.getPrice(), quantity));
 
     }
 

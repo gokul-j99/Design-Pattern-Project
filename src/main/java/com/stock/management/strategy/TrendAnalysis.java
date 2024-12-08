@@ -1,13 +1,14 @@
 package com.stock.management.strategy;
 
 import com.stock.management.models.Stock;
+import com.stock.management.models.UserStock;
 import com.stock.management.storage.InMemoryDatabase;
 
 import java.util.List;
 
 public class TrendAnalysis implements StockAnalysisStrategy {
-    public String analyze(Stock stock) {
-        List<Double> currentPrice = InMemoryDatabase.getStockPrice(stock.getName());
+    public String analyze(UserStock userStock) {
+        List<Double> currentPrice = InMemoryDatabase.getStockPrice(userStock.getStock());
         double previousPrice = 0;
         int performance = 0;
         int index = Math.max(0,currentPrice.size() - 6);
@@ -24,11 +25,11 @@ public class TrendAnalysis implements StockAnalysisStrategy {
         }
 
         if (performance > 0) {
-            return stock.getName() + ": Uptrend (Current Price: " + currentPrice.get(n-1) + ")";
+            return userStock.getStock() + ": Uptrend (Current Price: " + currentPrice.get(n-1) + ")";
         } else if (performance < 0) {
-            return stock.getName() + ": Downtrend (Current Price: " + currentPrice.get(n-1) + ")";
+            return userStock.getStock() + ": Downtrend (Current Price: " + currentPrice.get(n-1) + ")";
         } else {
-            return stock.getName() + ": No significant change.";
+            return userStock.getStock() + ": No significant change.";
         }
     }
 }

@@ -68,7 +68,6 @@ public class StockController {
 
         // Notify observers
         InMemoryDatabase.notifyStockUpdate(stockName, message.toString());
-        StockNotifier.getInstance().notifyObservers(stockName, message.toString());
 
         return ResponseEntity.ok("Update successful for stock '" + stockName + "': " + message.toString());
     }

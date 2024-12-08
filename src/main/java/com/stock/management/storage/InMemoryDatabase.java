@@ -3,6 +3,8 @@ package com.stock.management.storage;
 import com.stock.management.commands.Command;
 import com.stock.management.models.Portfolio;
 import com.stock.management.models.Stock;
+import com.stock.management.models.Transaction;
+import com.stock.management.models.UserStock;
 import com.stock.management.observer.Observer;
 
 import java.util.*;
@@ -18,6 +20,16 @@ public class InMemoryDatabase {
 
     private static Map<String, Integer> stockQuantity = new HashMap<>();
     private static Map<String, String> sessionDB = new HashMap<>(); // Stores active sessions with roles
+
+    private static Map<UserStock, List<Transaction>> transactions = new HashMap<>();
+
+    public static void recordTransaction(UserStock userStock, Transaction transaction) {
+        transactions.computeIfAbsent(userStock, k -> new ArrayList<>()).add(transaction);
+    }
+
+    public static List<Transaction> getTransaction(UserStock userStock) {
+        return transactions.getOrDefault(userStock, new ArrayList<>());
+    }
 
     public static Set<Portfolio> getPortfolios(String username) {
         return portfolioDB.get(username);

@@ -1,6 +1,7 @@
 package com.stock.management.strategy;
 
 import com.stock.management.models.Stock;
+import com.stock.management.models.UserStock;
 
 public class AnalysisContext {
     private StockAnalysisStrategy strategy;
@@ -9,10 +10,10 @@ public class AnalysisContext {
         this.strategy = strategy;
     }
 
-    public String executeAnalysis(Stock stock) {
+    public String executeAnalysis(UserStock userStock) {
         if (strategy == null) {
             throw new IllegalStateException("No analysis strategy set.");
         }
-        return strategy.analyze(stock);
+        return strategy.analyze(userStock);
     }
 }

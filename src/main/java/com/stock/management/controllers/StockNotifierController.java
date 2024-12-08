@@ -42,19 +42,6 @@ public class StockNotifierController {
         }
     }
 
-    @PostMapping("/update-price")
-    public ResponseEntity<String> updateStockPrice(@RequestParam String stockName, @RequestParam double newPrice) {
-        try {
-            String message = "Stock price updated to $" + newPrice;
-            StockNotifier.getInstance().notifyObservers(stockName, message);
-            InMemoryDatabase.notifyStockUpdate(stockName, message);
-            return ResponseEntity.ok("Stock price updated for " + stockName + " to $" + newPrice);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to update stock price for " + stockName + ". Error: " + e.getMessage());
-        }
-    }
-
     @GetMapping("/subscriptions")
     public ResponseEntity<Map<String, List<String>>> viewSubscriptions() {
         try {
