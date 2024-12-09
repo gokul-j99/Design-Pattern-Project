@@ -43,7 +43,7 @@ public class PortfolioController {
        String role = InMemoryDatabase.getUserRole(username);
         if (role == null || !role.equals("user")) {
            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                   .body("Permission denied. Only users can create portfolios.");
+                   .body("Permission denied. Only users can delete portfolios.");
        }
         if(! InMemoryDatabase.deletePortfolio(username,portfolioName)){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

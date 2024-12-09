@@ -1,12 +1,15 @@
 package com.stock.management.commands;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.stock.management.bridge.Currency;
 import com.stock.management.models.Portfolio;
 import com.stock.management.models.Stock;
 import com.stock.management.models.Transaction;
 import com.stock.management.models.UserStock;
 import com.stock.management.storage.InMemoryDatabase;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SellStockCommand implements Command {
 
     public final static String action = "SELL";
@@ -14,6 +17,39 @@ public class SellStockCommand implements Command {
     private Stock stock;
     private int quantity;
     private Currency sellCurrency;
+
+    @JsonIgnore
+    public Portfolio getPortfolio() {
+        return portfolio;
+    }
+
+    public void setPortfolio(Portfolio portfolio) {
+        this.portfolio = portfolio;
+    }
+
+    public Stock getStock() {
+        return stock;
+    }
+
+    public void setStock(Stock stock) {
+        this.stock = stock;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public Currency getSellCurrency() {
+        return sellCurrency;
+    }
+
+    public void setSellCurrency(Currency sellCurrency) {
+        this.sellCurrency = sellCurrency;
+    }
 
     public SellStockCommand(Portfolio portfolio, Stock stock, int quantity, Currency sellCurrency) {
         this.portfolio = portfolio;

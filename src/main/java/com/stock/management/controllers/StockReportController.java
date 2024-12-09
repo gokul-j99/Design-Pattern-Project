@@ -22,7 +22,7 @@ public class StockReportController {
                         .body("Stock not found: " + stockName);
             }
             UserStock userStock = new UserStock(username,stockName);
-            // Decorate the stock with detailed report functionality
+
             Stock decoratedStock = new DetailedStockReport(userStock);
             String report = decoratedStock.display();
 

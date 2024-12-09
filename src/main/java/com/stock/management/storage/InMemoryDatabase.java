@@ -21,14 +21,15 @@ public class InMemoryDatabase {
     private static Map<String, Integer> stockQuantity = new HashMap<>();
     private static Map<String, String> sessionDB = new HashMap<>(); // Stores active sessions with roles
 
-    private static Map<UserStock, List<Transaction>> transactions = new HashMap<>();
+    private static Map<String, List<Transaction>> transactions = new HashMap<>();
 
     public static void recordTransaction(UserStock userStock, Transaction transaction) {
-        transactions.computeIfAbsent(userStock, k -> new ArrayList<>()).add(transaction);
+        transactions.computeIfAbsent(userStock.getStock(), k -> new ArrayList<>()).add(transaction);
+
     }
 
     public static List<Transaction> getTransaction(UserStock userStock) {
-        return transactions.getOrDefault(userStock, new ArrayList<>());
+        return transactions.getOrDefault(userStock.getStock(), new ArrayList<>());
     }
 
     public static Set<Portfolio> getPortfolios(String username) {

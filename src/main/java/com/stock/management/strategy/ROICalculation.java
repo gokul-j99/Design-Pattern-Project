@@ -26,6 +26,7 @@ public class ROICalculation implements StockAnalysisStrategy {
                 totalPurchaseCost -= transaction.getPrice() * transaction.getQuantity();
                 totalQuantityOwned -= transaction.getQuantity();
             }
+            System.out.println(totalPurchaseCost);
         }
 
         if (totalQuantityOwned <= 0) {

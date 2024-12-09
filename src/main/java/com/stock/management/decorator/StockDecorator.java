@@ -9,6 +9,7 @@ public abstract class StockDecorator extends Stock {
 
     public StockDecorator(UserStock userStock) {
         super();
+        this.stock = userStock;
     }
 
     public abstract String display();
