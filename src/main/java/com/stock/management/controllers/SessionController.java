@@ -32,7 +32,7 @@ public class SessionController {
                 .body("Current user: " + loggedInUser);
     }
 
-    @DeleteMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestParam String username) {
         boolean success = session.logout(username);
         if (success) {

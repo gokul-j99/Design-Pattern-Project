@@ -1,14 +1,10 @@
 package com.stock.management.controllers;
 
-import com.stock.management.Utility.StockHelper;
 import com.stock.management.models.Portfolio;
-import com.stock.management.models.Stock;
 import com.stock.management.storage.InMemoryDatabase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -42,58 +38,17 @@ public class PortfolioController {
 
     }
 
-    @PostMapping("/add-stock")
-    public ResponseEntity<String> addStockToPortfolio(
-            @RequestParam String username,
-            @RequestParam String stockName,
-            @RequestParam String portfolioName,
-            @RequestParam int quantity) {
-
-        // Validate user's role
-        String role = InMemoryDatabase.getUserRole(username);
+   @DeleteMapping("/deletePortfolio")
+    public ResponseEntity<String> deletePortfolio(@RequestParam String username, @RequestParam String portfolioName ){
+       String role = InMemoryDatabase.getUserRole(username);
         if (role == null || !role.equals("user")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Permission denied. Only users can add stocks to portfolios.");
-        }
-
-        // Find the portfolio
-        Portfolio portfolio = StockHelper.getValidPortfolio(username, portfolioName);
-        if (portfolio == null) {
+           return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                   .body("Permission denied. Only users can create portfolios.");
+       }
+        if(! InMemoryDatabase.deletePortfolio(username,portfolioName)){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("No portfolio named '" + portfolioName + "' found for user: " + username);
+                    .body("The portfolio '" + portfolioName + "' is not in the database for the given user. Please add the portfolio.");
         }
-
-        // Check if the stock exists in the database
-        Stock stock = InMemoryDatabase.getStock(stockName);
-        if (stock == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Stock '" + stockName + "' not found in the database.");
-        }
-
-        // Check stock availability
-        int availableQuantity = InMemoryDatabase.getAvailableQuantity(stockName);
-        if (quantity > availableQuantity) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Transaction failed: Not enough stock available. Requested: " + quantity +
-                            ", Available: " + availableQuantity);
-        }
-
-        // Deduct the purchased quantity from the stock database
-        InMemoryDatabase.updateStockQuantity(stockName, -quantity);
-
-        // Add the purchased stock to the user's portfolio
-        Stock stockToAdd = new Stock(stock.getName(), stock.getPrice(), quantity) {
-            @Override
-            public String display() {
-                return "Stock: " + getName() + ", Price: " + getPrice();
-            }
-        };
-        portfolio.addStock(stockToAdd);
-        InMemoryDatabase.savePortfolio(username, portfolio); // Update portfolio in the database
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body("Added stock: '" + stockToAdd.getName() + "' (Quantity: " + quantity +
-                        ") to portfolio '" + portfolioName + "'. Remaining available: " +
-                        InMemoryDatabase.getAvailableQuantity(stockName));
-    }
+       return ResponseEntity.status(HttpStatus.OK).body("Deleted Successfully");
+   }
 }

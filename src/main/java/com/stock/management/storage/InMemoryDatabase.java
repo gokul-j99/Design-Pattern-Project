@@ -49,8 +49,22 @@ public class InMemoryDatabase {
 
     }
 
-    public static void deletePortfolio(String username) {
-        portfolioDB.remove(username);
+    public static boolean deletePortfolio(String username, String portfolioName) {
+        if(portfolioDB.containsKey(username)){
+            Set<Portfolio> portfolios = portfolioDB.get(username);
+            if(portfolios.contains(portfolioName)){
+                portfolios.remove(portfolioName);
+                portfolioDB.put(username,portfolios);
+                return  true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+
+        }
     }
 
     public static Stock getStock(String name) {
@@ -74,6 +88,16 @@ public class InMemoryDatabase {
 
         System.out.println("InMemoryDatabase");
         System.out.println(stockDB.get(stock.getName()));
+    }
+
+    public static void deleteStock(String stockname){
+        if (!stockDB.containsKey(stockname)) {
+            stockDB.remove(stockname);
+            stockPrices.remove(stockname);
+            stockQuantity.remove(stockname);
+
+        }
+
     }
 
     public static int getAvailableQuantity(String stockName) {

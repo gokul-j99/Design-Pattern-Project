@@ -84,4 +84,19 @@ public class StockController {
         Map<String, Stock> stocks = InMemoryDatabase.getStockDB();
         return ResponseEntity.ok(stocks);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteStock(
+            @RequestParam String username,
+            @RequestParam String stockName){
+
+        String role = InMemoryDatabase.getUserRole(username);
+        if (role == null || !role.equals("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Permission denied. Only admins can update stocks.");
+        }
+
+        InMemoryDatabase.deleteStock(stockName);
+        return ResponseEntity.ok("Deleted successful  stock : " + stockName);
+    }
 }
