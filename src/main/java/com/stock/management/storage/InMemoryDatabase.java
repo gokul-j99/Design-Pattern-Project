@@ -131,6 +131,7 @@ public class InMemoryDatabase {
             Stock stock = stockDB.get(name);
             if (stock != null) {
                 stock.setPrice(newPrice);
+                stockDB.put(name,stock);
             }
             return true;
         }

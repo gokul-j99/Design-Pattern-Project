@@ -76,6 +76,13 @@ public class BuyStockCommand implements Command {
         InMemoryDatabase.updateStockQuantity(stock.getName(), -quantity); // Decrement stock quantity
         System.out.println("Executed: Bought " + quantity + " of " + stock.getName());
         UserStock userStock = new UserStock(portfolio.getOwner(), stock.getName());
+
+        double totaAmountInBaseCurrency = stock.getPrice() * quantity;
+        double totalAmountInBuyingCurrency = currency.convertToBaseCurrency(totaAmountInBaseCurrency);
+
+        System.out.println("Buying " + quantity + " of stock '" + stock.getName() + "' for " +
+                currency.getCurrencySymbol() + totalAmountInBuyingCurrency +
+                " (" + totaAmountInBaseCurrency + " in base currency USD).");
         InMemoryDatabase.recordTransaction(userStock, new Transaction("buy", stock.getPrice(), quantity));
 
     }
